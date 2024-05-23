@@ -29,8 +29,8 @@ class _AppointmentFormState extends State<AppointmentForm> {
     final date = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 5, DateTime.now().month, DateTime.now().day),
     );
 
     if (date != null) {
@@ -57,8 +57,38 @@ class _AppointmentFormState extends State<AppointmentForm> {
     }
   }
 
+  void _showAlert(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _saveForm() {
     if (_formKey.currentState?.validate() ?? false) {
+      final now = DateTime.now();
+      final startDateTime = DateTime(_date.year, _date.month, _date.day, _startTime.hour, _startTime.minute);
+      final endDateTime = DateTime(_date.year, _date.month, _date.day, _endTime.hour, _endTime.minute);
+
+      if (startDateTime.isBefore(now)) {
+        _showAlert('Invalid Time', 'Start time cannot be before current time.');
+        return;
+      }
+
+      if (endDateTime.isBefore(startDateTime)) {
+        _showAlert('Invalid Time', 'End time cannot be before start time.');
+        return;
+      }
+
       final newAppointment = Appointment(
         _contactController.text,
         _activityController.text,

@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                               Icon(Icons.event),
                               SizedBox(width: 8),
                               Text(appointment.date.toLocal().toString().split(' ')[0]),
-                              SizedBox(width: 8),
+                              SizedBox(width: 10),
                               Icon(Icons.access_time),
                               SizedBox(width: 8),
                               Text(appointment.startTime.format(context)),
