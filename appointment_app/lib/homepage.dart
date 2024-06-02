@@ -12,11 +12,38 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final AppointmentController _controller = AppointmentController();
 
+  void _showDeleteDialog(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Appointment'),
+          content: Text('Are you sure you want to delete this appointment?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () {
+                _controller.deleteAppointment(index);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Business Appointments'),
+        title: Text('Your Appointments'),
       ),
       body: ValueListenableBuilder(
         valueListenable: Hive.box<Appointment>('appointments').listenable(),
@@ -51,7 +78,8 @@ class _HomePageState extends State<HomePage> {
                               Expanded(
                                 child: Text(
                                   appointment.contact,
-                                  overflow: TextOverflow.ellipsis,
+                                  overflow: TextOverflow.visible,
+                                  maxLines: null,
                                 ),
                               ),
                             ],
@@ -62,7 +90,8 @@ class _HomePageState extends State<HomePage> {
                               Expanded(
                                 child: Text(
                                   appointment.activity,
-                                  overflow: TextOverflow.ellipsis,
+                                  overflow: TextOverflow.visible,
+                                  maxLines: null,
                                 ),
                               ),
                             ],
@@ -91,7 +120,8 @@ class _HomePageState extends State<HomePage> {
                               Expanded(
                                 child: Text(
                                   appointment.location,
-                                  overflow: TextOverflow.ellipsis,
+                                  overflow: TextOverflow.visible,
+                                  maxLines: null,
                                 ),
                               ),
                             ],
@@ -105,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                       child: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
-                          _controller.deleteAppointment(index);
+                          _showDeleteDialog(context, index);
                         },
                       ),
                     ),

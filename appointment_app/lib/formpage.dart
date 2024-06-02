@@ -26,11 +26,12 @@ class _AppointmentFormState extends State<AppointmentForm> {
   }
 
   Future<void> _pickDate(BuildContext context) async {
+    final now = DateTime.now();
     final date = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(DateTime.now().year + 5, DateTime.now().month, DateTime.now().day),
+      initialDate: now,
+      firstDate: now,
+      lastDate: DateTime(now.year + 5, now.month, now.day),
     );
 
     if (date != null) {
@@ -76,6 +77,7 @@ class _AppointmentFormState extends State<AppointmentForm> {
   void _saveForm() {
     if (_formKey.currentState?.validate() ?? false) {
       final now = DateTime.now();
+      final maxDateTime = DateTime(now.year + 5, now.month, now.day, now.hour, now.minute);
       final startDateTime = DateTime(_date.year, _date.month, _date.day, _startTime.hour, _startTime.minute);
       final endDateTime = DateTime(_date.year, _date.month, _date.day, _endTime.hour, _endTime.minute);
 
@@ -84,8 +86,18 @@ class _AppointmentFormState extends State<AppointmentForm> {
         return;
       }
 
+      if (startDateTime.isAfter(maxDateTime)) {
+        _showAlert('Invalid Time', 'Start time cannot be more than 5 years from now.');
+        return;
+      }
+
       if (endDateTime.isBefore(startDateTime)) {
         _showAlert('Invalid Time', 'End time cannot be before start time.');
+        return;
+      }
+
+      if (endDateTime.isAfter(maxDateTime)) {
+        _showAlert('Invalid Time', 'End time cannot be more than 5 years from now.');
         return;
       }
 
